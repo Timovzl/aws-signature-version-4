@@ -1,10 +1,10 @@
-import { CfnAccessKey, IRole, IUser, PolicyStatement, Role, User } from '@aws-cdk/aws-iam'
-import { CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core'
+import { aws_iam as iam, CfnOutput, Stack, StackProps } from 'aws-cdk-lib'
+import { Construct } from 'constructs'
 
 export class UsersStack extends Stack {
-  readonly userWithPermissions: IUser
-  readonly userWithoutPermissions: IUser
-  readonly roleWithPermissions: IRole
+  readonly userWithPermissions: iam.IUser
+  readonly userWithoutPermissions: iam.IUser
+  readonly roleWithPermissions: iam.IRole
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props)
@@ -14,9 +14,9 @@ export class UsersStack extends Stack {
     this.roleWithPermissions = this.createRoleWithPermissions()
   }
 
-  private createUserWithPermissions(): IUser {
+  private createUserWithPermissions(): iam.IUser {
     // Create user
-    const user = new User(this, 'UserWithPermissions', {
+    const user = new iam.User(this, 'UserWithPermissions', {
       userName: 'sigv4-UserWithPermissions',
     })
 
@@ -25,7 +25,7 @@ export class UsersStack extends Stack {
     })
 
     // Create access key
-    const accessKey = new CfnAccessKey(this, 'UserWithPermissionsAccessKey', {
+    const accessKey = new iam.CfnAccessKey(this, 'UserWithPermissionsAccessKey', {
       userName: user.userName,
     })
 
@@ -41,14 +41,14 @@ export class UsersStack extends Stack {
     return user
   }
 
-  private createUserWithoutPermissions(): IUser {
+  private createUserWithoutPermissions(): iam.IUser {
     // Create user
-    const user = new User(this, 'UserWithoutPermissions', {
+    const user = new iam.User(this, 'UserWithoutPermissions', {
       userName: 'sigv4-UserWithoutPermissions',
     })
 
     // Create access key
-    const accessKey = new CfnAccessKey(this, 'UserWithoutPermissionsAccessKey', {
+    const accessKey = new iam.CfnAccessKey(this, 'UserWithoutPermissionsAccessKey', {
       userName: user.userName,
     })
 
@@ -64,14 +64,14 @@ export class UsersStack extends Stack {
     return user
   }
 
-  private createRoleWithPermissions(): IRole {
-    const role = new Role(this, 'ApiGatewayRole', {
+  private createRoleWithPermissions(): iam.IRole {
+    const role = new iam.Role(this, 'ApiGatewayRole', {
       assumedBy: this.userWithoutPermissions,
       roleName: 'sigv4-ApiGatewayInvoke',
     })
 
     role.addToPolicy(
-      new PolicyStatement({
+      new iam.PolicyStatement({
         actions: ['execute-api:Invoke', 'execute-api:ManageConnections'],
         resources: ['arn:aws:execute-api:*:*:*'],
       })

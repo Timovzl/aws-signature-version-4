@@ -1,16 +1,15 @@
-import { IIdentity } from '@aws-cdk/aws-iam'
-import { Bucket } from '@aws-cdk/aws-s3'
-import { CfnOutput, Construct, Duration, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core'
+import { aws_iam as iam, aws_s3 as s3, CfnOutput, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib'
+import { Construct } from 'constructs'
 
 export interface S3StackProps extends StackProps {
-  readWriteAccess: IIdentity[]
+  readWriteAccess: iam.IIdentity[]
 }
 
 export class S3Stack extends Stack {
   constructor(scope: Construct, id: string, props: S3StackProps) {
     super(scope, id, props)
 
-    const bucket = new Bucket(this, 'Bucket', {
+    const bucket = new s3.Bucket(this, 'Bucket', {
       removalPolicy: RemovalPolicy.DESTROY,
     })
 

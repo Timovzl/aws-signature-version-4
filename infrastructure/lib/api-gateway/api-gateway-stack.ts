@@ -1,34 +1,31 @@
-import { AuthorizationType, LambdaRestApi } from '@aws-cdk/aws-apigateway'
-import { Code, Function, Runtime } from '@aws-cdk/aws-lambda'
-import { CfnOutput, Construct, Stack, StackProps } from '@aws-cdk/core'
+import { aws_apigateway as apiGateway, aws_lambda as lambda, CfnOutput, Stack, StackProps } from 'aws-cdk-lib'
+import { Construct } from 'constructs'
 
 export class ApiGatewayStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props)
 
     // Create Lambda
-    const requestHandler = new Function(this, 'ApiRequestHandler', {
-      code: Code.fromAsset(`${__dirname}/handlers`),
+    const requestHandler = new lambda.Function(this, 'ApiRequestHandler', {
+      code: lambda.Code.fromAsset(`${__dirname}/handlers`),
       handler: 'request.handler',
-      runtime: Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
     })
 
     // Create API Gateway
-    const api = new LambdaRestApi(this, 'Api', {
+    const api = new apiGateway.LambdaRestApi(this, 'Api', {
+      restApiName: 'SignatureVersion4',
+      description: 'REST API endpoint for Signature Version 4 tests',
       handler: requestHandler,
-      options: {
-        description: 'REST API endpoint for Signature Version 4 tests',
-        restApiName: 'SignatureVersion4',
-      },
       proxy: false,
     })
 
     api.root.addMethod('ANY', undefined, {
-      authorizationType: AuthorizationType.IAM,
+      authorizationType: apiGateway.AuthorizationType.IAM,
     })
 
     api.root.addResource('{proxy+}').addMethod('ANY', undefined, {
-      authorizationType: AuthorizationType.IAM,
+      authorizationType: apiGateway.AuthorizationType.IAM,
     })
 
     new CfnOutput(this, 'ApiGatewayUrl', {

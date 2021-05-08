@@ -16,9 +16,12 @@
     "lint:fix": "eslint --ext .ts --fix . && prettier --write ."
   },
   "dependencies": {
+    "@aws-cdk/assert": "2.0.0-rc.1",
     "@types/node": "14.14.44",
     "@typescript-eslint/eslint-plugin": "4.22.1",
     "@typescript-eslint/parser": "4.22.1",
+    "aws-cdk-lib": "2.0.0-rc.1",
+    "constructs": "10.0.5",
     "eslint": "7.26.0",
     "prettier": "2.2.1",
     "rimraf": "3.0.2",
